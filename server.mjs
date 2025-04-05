@@ -4,6 +4,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.mjs";
 import onboardingRoutes from "./routes/onboardingRoutes.mjs"
+import profileRoutes from "./routes/profileRoutes.mjs"; // ✅ Qo‘shildi
+import greetingGameRoutes from "./routes/geetingGameRoutes.mjs";
+import coloringGame from "./routes/coloringRoutes.mjs";
+
 
 // .env faylini yuklash
 dotenv.config();
@@ -28,6 +32,10 @@ mongoose
 // API marshrutlari
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding" , onboardingRoutes)
+app.use("/api/profile", profileRoutes); 
+app.use("/api/greetings", greetingGameRoutes);
+app.use("/api/colorings", coloringGame)
+
 
 // Xatoliklarni ushlash uchun middleware
 app.use((err, req, res, next) => {
