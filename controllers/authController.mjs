@@ -1,57 +1,47 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import User from "../models/user.mjs";
+import User from '../models/user.mjs';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-// Ro‘yxatdan o‘tish
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_EXPIRES_IN = '2d'; 
+
+// Register
 export const register = async (req, res) => {
-    try {
-        const { fullname, phone, password } = req.body;
+  const { name, email, password, confirmPassword } = req.body;
 
-        // Telefon raqamini tekshiramiz
-        const existingUser = await User.findOne({ phone });
-        if (existingUser) {
-            return res.status(400).json({ message: "Bu telefon raqami allaqachon ro‘yxatdan o‘tgan!" });
-        }
+  if (!name || !email || !password || !confirmPassword)
+    return res.status(400).json({ message: 'Barcha maydonlar to‘ldirilishi kerak' });
 
-        // Parolni shifrlaymiz
-        const hashedPassword = await bcrypt.hash(password, 10);
+  if (password !== confirmPassword)
+    return res.status(400).json({ message: 'Parollar mos emas' });
 
-        // Yangi user yaratamiz
-        const newUser = new User({
-            fullname,
-            phone,
-            password: hashedPassword,
-        });
+  const existingUser = await User.findOne({ email });
+  if (existingUser)
+    return res.status(400).json({ message: 'Email allaqachon ro‘yxatdan o‘tgan' });
 
-        await newUser.save();
-        res.status(201).json({ message: "Foydalanuvchi muvaffaqiyatli ro‘yxatdan o‘tdi!" });
-    } catch (error) {
-        res.status(500).json({ message: "Server xatosi", error });
-    }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = new User({ name, email, password: hashedPassword });
+  await newUser.save();
+
+  res.status(201).json({ message: 'Foydalanuvchi muvaffaqiyatli ro‘yxatdan o‘tdi' });
 };
 
-// Login qilish
+// Login
 export const login = async (req, res) => {
-    try {
-        const { phone, password } = req.body;
+  const { email, password } = req.body;
 
-        // Userni topamiz
-        const user = await User.findOne({ phone });
-        if (!user) {
-            return res.status(400).json({ message: "Telefon raqami yoki parol noto‘g‘ri!" });
-        }
+  if (!email || !password)
+    return res.status(400).json({ message: 'Email va parol kiritilishi kerak' });
 
-        // Parolni tekshiramiz
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Telefon raqami yoki parol noto‘g‘ri!" });
-        }
+  const user = await User.findOne({ email });
+  if (!user)
+    return res.status(400).json({ message: 'Bunday foydalanuvchi mavjud emas' });
 
-        // Token yaratamiz
-        const token = jwt.sign({ id: user._id }, "secretKey", { expiresIn: "30d" });
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch)
+    return res.status(400).json({ message: 'Parol noto‘g‘ri' });
 
-        res.status(200).json({ token, user });
-    } catch (error) {
-        res.status(500).json({ message: "Server xatosi", error });
-    }
+  const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+
+  res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
 };
