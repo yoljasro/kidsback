@@ -9,9 +9,23 @@ import greetingGameRoutes from "./routes/geetingGameRoutes.mjs";
 import coloringGame from "./routes/coloringRoutes.mjs";
 import wordRoutes from './routes/wordRoutes.mjs';
 import chestRoutes from './routes/chestRoutes.mjs';
+import answerSelectionRoutes from './routes/answerSelectRoute.mjs';
 import wheelPhraseRoutes from './routes/wheelPhraseRoutes.mjs';
-import itemRoutes  from './routes/itemRoutes.mjs';
+import itemRoutes from './routes/itemRoutes.mjs';
 import tshirRoutes from "./routes/tshirtRoutes.mjs"
+import colorMatchRoutes from './routes/colorMatchRoutes.mjs';
+import dialogGameRoutes from "./routes/dialogRoutes.mjs";
+import dialogWithCharactersRoutes from "./routes/dialogWithCharactersRoutes.mjs";
+import gameTypeRoutes from "./routes/gameTypeRoutes.mjs";
+import proporRoutes from "./routes/proporRoutes.mjs"
+import silhouetteRoutes from './routes/silhouetteRoutes.mjs';
+import chatRoutes from "./routes/charRoutes.mjs"
+import lastGame from "./routes/lastGameRoute.mjs"
+import drawing from "./routes/drawingRoutes.mjs"
+import imageChoiceRoutes from './routes/choiceRoutes.mjs';
+import gameContentRoutes from './routes/fortuneRoutes.mjs';
+
+
 
 // .env faylini yuklash
 dotenv.config();
@@ -34,19 +48,33 @@ mongoose
 
 // API marshrutlari
 app.use("/api/auth", authRoutes);
-app.use("/api/onboarding" , onboardingRoutes)
-app.use("/api/profile", profileRoutes); 
+app.use("/api/onboarding", onboardingRoutes)
+app.use("/api/profile", profileRoutes);
 app.use("/api/greetings", greetingGameRoutes);
 app.use("/api/colorings", coloringGame)
 app.use('/api/words', wordRoutes);
 app.use('/api/chest-words', chestRoutes);
 app.use('/api/wheel-phrases', wheelPhraseRoutes);
 app.use('/api/items', itemRoutes);
-app.use("/api/tshirts" , tshirRoutes)
+app.use("/api/tshirts", tshirRoutes) 
+app.use('/api/color-match', colorMatchRoutes);
+app.use("/api/dialog-game", dialogGameRoutes);
+app.use("/api/dialog-character-game", dialogWithCharactersRoutes);
+app.use("/api/gametypes" ,gameTypeRoutes )  
+app.use('/api/answer-selection', answerSelectionRoutes);
+app.use("/api/propor" , proporRoutes)
+app.use("/api/chats" , chatRoutes)
+app.use('/api/silhouette', silhouetteRoutes);   
+app.use("/api/lastgame" , lastGame)
+app.use("/api" , drawing)
+app.use("/api", imageChoiceRoutes);
+app.use('/api', gameContentRoutes);
+
+
 
 // Xatoliklarni ushlash uchun middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack); 
+    console.error(err.stack);
     res.status(500).json({ message: "Ichki server xatosi!" });
 });
 

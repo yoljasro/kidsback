@@ -1,3 +1,4 @@
+//1.2
 import mongoose from 'mongoose';
 
 const wheelPhraseSchema = new mongoose.Schema({
@@ -23,3 +24,4 @@ const wheelPhraseSchema = new mongoose.Schema({
 
 const WheelPhrase = mongoose.model('WheelPhrase', wheelPhraseSchema);
 export default WheelPhrase;
+

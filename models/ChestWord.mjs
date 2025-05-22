@@ -1,3 +1,4 @@
+// 1.1
 import mongoose from 'mongoose';
 
 const chestWordSchema = new mongoose.Schema({
@@ -9,3 +10,4 @@ const chestWordSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 export default mongoose.model('ChestWord', chestWordSchema);
+ 
