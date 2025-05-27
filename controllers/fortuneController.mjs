@@ -1,4 +1,3 @@
-// controllers/gameContentController.js
 import GameContent from '../models/fortuneModel.mjs';
 
 export const getInstruction = async (req, res) => {
@@ -10,5 +9,22 @@ export const getInstruction = async (req, res) => {
     res.status(200).json(instruction);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// ✅ POST controller
+export const createInstruction = async (req, res) => {
+  try {
+    const { type, content } = req.body;
+    if (!type || !content) {
+      return res.status(400).json({ message: "type va content talab qilinadi" });
+    }
+
+    const newInstruction = new GameContent({ type, content });
+    await newInstruction.save();
+
+    res.status(201).json(newInstruction);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };

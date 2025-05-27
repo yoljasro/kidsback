@@ -24,6 +24,8 @@ import lastGame from "./routes/lastGameRoute.mjs"
 import drawing from "./routes/drawingRoutes.mjs"
 import imageChoiceRoutes from './routes/choiceRoutes.mjs';
 import gameContentRoutes from './routes/fortuneRoutes.mjs';
+import shirtGameRoutes from "./routes/shirtRoutes.mjs";
+
 
 
 
@@ -69,6 +71,9 @@ app.use("/api/lastgame" , lastGame)
 app.use("/api" , drawing)
 app.use("/api", imageChoiceRoutes);
 app.use('/api', gameContentRoutes);
+app.use("/api/shirt-game", shirtGameRoutes); // API marshruti
+
+
 
 
 
