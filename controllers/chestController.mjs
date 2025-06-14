@@ -21,11 +21,12 @@ export const getAllChestWords = async (req, res) => {
   }
 };
 
-// Tasodifiy bitta so‘z olish (o‘yin boshlanganda)
+// Tasodifiy bitta so‘z olish (o‘yin boshlanganda) 
 export const getRandomChestWord = async (req, res) => {
   try {
-    const random = await ChestWord.aggregate([{ $sample: { size: 1 } }]);
-    res.json(random[0]);
+    const { order } = req.params;
+    const random = await ChestWord.findOne({ order: order });
+    res.json(random);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

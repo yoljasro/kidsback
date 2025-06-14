@@ -1,25 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const wheelPhraseSchema = new mongoose.Schema({
-  russian: {
-    type: String,
+const WheelPhraseSchema = new mongoose.Schema({
+  words: {
+    type: Array,
     required: true,
   },
-  uzbek: {
-    type: String,
+  order: {
+    type: Number,
     required: true,
+    unique: true,
   },
-  module: {
-    type: String,
-    required: true,
-  },
-  lesson: {
-    type: String,
-    required: true,
-  },
-}, {
-  timestamps: true,
 });
 
-const WheelPhrase = mongoose.model('WheelPhrase', wheelPhraseSchema);
+const WheelPhrase = mongoose.model("WheelPhrase", WheelPhraseSchema);
+
 export default WheelPhrase;

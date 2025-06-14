@@ -1,19 +1,23 @@
-import express from 'express';
+import express from "express";
 import {
   createWheelPhrase,
   getAllWheelPhrases,
   getRandomWheelPhrase,
-} from '../controllers/wheelPhraseController.mjs';
+  getPhraseByOrder,
+} from "../controllers/wheelPhraseController.mjs";
 
 const router = express.Router();
 
-// POST - Add new phrase
-router.post('/', createWheelPhrase);
+// Yangi ibora qo'shish
+router.post("/", createWheelPhrase);
 
-// GET - All phrases
-router.get('/', getAllWheelPhrases);
+// Barcha iboralarni olish
+router.get("/", getAllWheelPhrases);
 
-// GET - Random phrase (for wheel spin)
-router.get('/random', getRandomWheelPhrase);
+// Tasodifiy ibora olish
+router.get("/random", getRandomWheelPhrase);
+
+// Order bo'yicha ibora olish
+router.get("/next/:order", getPhraseByOrder);
 
 export default router;

@@ -3,45 +3,89 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const JWT_EXPIRES_IN = '2d'; 
+const JWT_EXPIRES_IN = '2d';
 
-// Register
+// ============ REGISTER =============
+// register controller (backendda)
 export const register = async (req, res) => {
-  const { name, email, password, confirmPassword } = req.body;
+  try {
+    const { name, email, password, confirmPassword, phone } = req.body;
 
-  if (!name || !email || !password || !confirmPassword)
-    return res.status(400).json({ message: 'Barcha maydonlar to‘ldirilishi kerak' });
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Ism, email va parol to‘ldirilishi shart' });
+    }
 
-  if (password !== confirmPassword)
-    return res.status(400).json({ message: 'Parollar mos emas' });
+    if (confirmPassword && password !== confirmPassword) {
+      return res.status(400).json({ message: 'Parollar mos emas' });
+    }
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser)
-    return res.status(400).json({ message: 'Email allaqachon ro‘yxatdan o‘tgan' });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Bu email bilan foydalanuvchi allaqachon mavjud' });
+    }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = new User({ name, email, password: hashedPassword });
-  await newUser.save();
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ name, email, password: hashedPassword, phone });
+    await newUser.save();
 
-  res.status(201).json({ message: 'Foydalanuvchi muvaffaqiyatli ro‘yxatdan o‘tdi' });
+    // ✅ Token yaratamiz
+    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
+
+    // ✅ Token va userni qaytaramiz
+    res.status(201).json({
+      message: 'Ro‘yxatdan muvaffaqiyatli o‘tildi',
+      token,
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone
+      }
+    });
+
+  } catch (error) {
+    console.error("Register error:", error);
+    res.status(500).json({ message: 'Serverda xatolik yuz berdi' });
+  }
 };
 
-// Login
+
+
+// ============== LOGIN ==============
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  if (!email || !password)
-    return res.status(400).json({ message: 'Email va parol kiritilishi kerak' });
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email va parol kiritilishi kerak' });
+    }
 
-  const user = await User.findOne({ email });
-  if (!user)
-    return res.status(400).json({ message: 'Bunday foydalanuvchi mavjud emas' });
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(400).json({ message: 'Foydalanuvchi topilmadi' });
+    }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch)
-    return res.status(400).json({ message: 'Parol noto‘g‘ri' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Parol noto‘g‘ri' });
+    }
 
-  const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
 
-  res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: 'Serverda xatolik yuz berdi' });
+  }
 };
